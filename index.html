@@ -860,14 +860,11 @@
                 if (iterations == numMovesLookAhead) {
                     var bestMove2 = Array();
                     var maxScore = 0;
-                    var strin = "";
                     for (var a in bestMove) {
                         var currScore = score(generateMove(testBoard, bestMove[a][0], bestMove[a][1], [bestMove[a][2][0]]));
-                        strin += bestMove[a] + ": " + currScore + "\n";
                         if (currScore > maxScore) {
                             maxScore = currScore;
                             bestMove2 = [bestMove[a].slice()];
-                            //bestMove2[0][2] = bestMove[a][2].slice();
                         }
                         else if (currScore == maxScore) {
                             bestMove2.push(bestMove[a].slice());
@@ -928,14 +925,11 @@
                 if (iterations == numMovesLookAhead) {
                     var bestMove2 = Array();
                     var maxScore = 0;
-                    var strin = "";
                     for (var a in bestMove) {
                         var currScore = 1.0 / score(generateMove(testBoard, bestMove[a][0], bestMove[a][1], [bestMove[a][2][0]]));
-                        strin += bestMove[a] + ": " + currScore + "\n";
                         if (currScore > maxScore) {
                             maxScore = currScore;
                             bestMove2 = [bestMove[a].slice()];
-                            //bestMove2[0][2] = bestMove[a][2].slice();
                         }
                         else if (currScore == maxScore) {
                             bestMove2.push(bestMove[a].slice());
@@ -1058,7 +1052,7 @@
                     if (testBoard[i][j] == "0" && n0 <= 6)
                         s0 += (7.0 - j) / 100.0;
                 }
-
+            /*
             //Kings want to move toward enemy pieces
             var kingLocations0 = Array();
             var kingLocations1 = Array();
@@ -1074,7 +1068,7 @@
 
             for (var a in kingLocations1)
                 s1 -= Math.abs(3.0 - kingLocations1[a][1]) / 100.0;
-
+            */
             if (s0 < 0.5)
                 return 9001.0;
             return s1 / s0;
