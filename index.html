@@ -38,6 +38,9 @@
         var numMovesLookAhead = 4;
         var moveTimer = 0;
         var activeAI = 0;
+        var animationTimer = 0;
+        var nextBoard = Array();
+        var animationHover = Array();
 
         var king = new Image();
 
@@ -52,7 +55,7 @@
         var debug5 = "(totalMoves, bestMoves, maxScore):";
 
         function initialize() {
-
+            animationHover = Array();
             c = document.getElementById("canvas1");
             ctx = c.getContext("2d");
 
@@ -141,35 +144,67 @@
             ctx.fillText(debug2, 700, 570);
             ctx.fillText(debug3, 700, 590);
             ctx.fillText(debug4, 700, 610);
-            ctx.fillText(debug5, 700, 630);
+            ctx.fillText(animationHover, 700, 630);
 
-            if (turn == "1") {
+            if (turn == "1" && animationTimer == 0) {
                 if (moveTimer < 5)  
                     moveTimer++;
                 if (moveTimer >= 5) {
                     var bestMove = getBestMove(board, numMovesLookAhead)[0];
                     debug4 = "bestMove: (" + bestMove[0] + ", " + bestMove[1] + "), directions: " + bestMove[2];
-                    board = generateMove(board, bestMove[0], bestMove[1], bestMove[2]);
-                    turn = "0";
+                    nextBoard = generateMove(board, bestMove[0], bestMove[1], bestMove[2]);
+                    animationTimer = 1;
+                    var temp = getAnimationHover(board, bestMove[0], bestMove[1], bestMove[2]);
+                    animationHover = Array();
+                    for (var i in temp)
+                        animationHover.push(temp[i].slice());
                     moveTimer = 0;
+                    selected = [bestMove[0], bestMove[1]];
+                    hovor = [-1, -1];
+
+
+                    for (var i = 1; i < 8; i += 2)
+                        if (nextBoard[i][7] == "1")
+                            nextBoard[i][7] = "11";
                 }
-                for (var i = 1; i < 8; i += 2)
-                    if (board[i][7] == "1")
-                        board[i][7] = "11";
             }
-            else if (turn == "0" && activeAI == 1) {
+            else if (turn == "0" && animationTimer == 0 && activeAI == 1) {
                 if (moveTimer < 5)
                     moveTimer++;
                 if (moveTimer >= 5) {
                     var bestMove = getBestMove2(board, numMovesLookAhead)[0];
                     debug4 = "bestMove: (" + bestMove[0] + ", " + bestMove[1] + "), directions: " + bestMove[2];
-                    board = generateMove(board, bestMove[0], bestMove[1], bestMove[2]);
-                    turn = "1";
+                    nextBoard = generateMove(board, bestMove[0], bestMove[1], bestMove[2]);
+                    animationTimer = 1;
+                    var temp = getAnimationHover(board, bestMove[0], bestMove[1], bestMove[2]);
+                    animationHover = Array();
+                    for (var i in temp)
+                        animationHover.push(temp[i].slice());
                     moveTimer = 0;
+                    selected = [bestMove[0], bestMove[1]];
+                    hovor = [-1, -1];
+
+                    for (var i = 0; i < 8; i += 2)
+                        if (nextBoard[i][0] == "0")
+                            nextBoard[i][0] = "00";
                 }
-                for (var i = 0; i < 8; i += 2)
-                    if (board[i][0] == "0")
-                        board[i][0] = "00";
+            }
+            else if (animationTimer > 0) {
+                animationTimer++;
+
+                if (animationTimer > 50) {
+                    board = Array();
+                    for (var i in nextBoard)
+                        board.push(nextBoard[i].slice());
+                    animationTimer = 0;
+                    if (turn == "0")
+                        turn = "1";
+                    else
+                        turn = "0";
+
+                    animationHover = Array();
+                    selected = [-1, -1];
+                }
             }
         }
         function drawPieces() {
@@ -240,6 +275,30 @@
                     ctx.stroke();
                 }
             }
+            if (animationTimer > 0) {
+                for (var a = 0; a < animationHover.length; a++) {
+                    var i = animationHover[a][0];
+                    var j = animationHover[a][1];
+                    if (turn == "0") {
+                        ctx.beginPath();
+                        ctx.arc(i * height + 0.5 * height + lineWidth, j * height + 0.5 * height + lineWidth, radius, 0, 2 * Math.PI, false);
+                        ctx.fillStyle = '#A89F95';
+                        ctx.fill();
+                        ctx.lineWidth = 3;
+                        ctx.strokeStyle = '#A19A8F';
+                        ctx.stroke();
+                    }
+                    else if (turn == "1") {
+                        ctx.beginPath();
+                        ctx.arc(i * height + 0.5 * height + lineWidth, j * height + 0.5 * height + lineWidth, radius, 0, 2 * Math.PI, false);
+                        ctx.fillStyle = '#B09A8F';
+                        ctx.fill();
+                        ctx.lineWidth = 3;
+                        ctx.strokeStyle = '#A89A8F';
+                        ctx.stroke();
+                    }
+                }
+            }
             
 
         }
@@ -286,13 +345,13 @@
                 }
             }
             else if (!permSelected) { //Select element
-                if (x >= 0 && x < 8 && y >= 0 && y < 8 && (x + y) % 2 == 0 && board[x][y][0] == turn && board[x][y] != "" && (!haveToEat || returnIfHasKill(x, y))) {
+                if (x >= 0 && x < 8 && y >= 0 && y < 8 && (x + y) % 2 == 0 && board[x][y][0] == turn && board[x][y] != "" && (!haveToEat || returnIfHasKill(x, y)) && animationTimer == 0) {
                     selected = [x, y];
                     if (x == 1 && y == 5) {
                         //alert(getBestMove(board, 3));
                     }
                 }
-                else if (haveToEat && !returnIfHasKill(x, y)) {
+                else if (haveToEat && !returnIfHasKill(x, y) && animationHover == 0) {
                     alert("If it is possible to eat a piece, you have to eat it.");
                 }
                 else {
@@ -917,6 +976,62 @@
             if (s0 < 0.5)
                 return 9001.0;
             return s1 / s0;
+        }
+        function getAnimationHover(testBoard, x, y, directions) {
+            var aniHover = Array();
+            if (directions.length == 1) {
+                if (directions[0] == 0) {
+                    if (testBoard[x - 1][y - 1] == "")
+                        aniHover = [[x - 1, y - 1]];
+                    else
+                        aniHover = [[x - 2, y - 2]];
+                }
+                else if (directions[0] == 1) {
+                    if (testBoard[x + 1][y - 1] == "")
+                        aniHover = [[x + 1, y - 1]];
+                    else
+                        aniHover = [[x + 2, y - 2]];
+                }
+                else if (directions[0] == 2) {
+                    if (testBoard[x + 1][y + 1] == "")
+                        aniHover = [[x + 1, y + 1]];
+                    else
+                        aniHover = [[x + 2, y + 2]];
+                }
+                else if (directions[0] == 3) {
+                    if (testBoard[x - 1][y + 1] == "")
+                        aniHover = [[x - 1, y + 1]];
+                    else
+                        aniHover = [[x - 2, y + 2]];
+                }
+            }
+            else {
+                var dX = x;
+                var dY = y;
+                for (var i in directions) {
+                    if (directions[i] == 0) {
+                        aniHover.push([dX - 2, dY - 2]);
+                        dX -= 2;
+                        dY -= 2;
+                    }
+                    else if (directions[i] == 1) {
+                        aniHover.push([dX + 2, dY - 2]);
+                        dX += 2;
+                        dY -= 2;
+                    }
+                    else if (directions[i] == 2) {
+                        aniHover.push([dX + 2, dY + 2]);
+                        dX += 2;
+                        dY += 2;
+                    }
+                    else if (directions[i] == 3) {
+                        aniHover.push([dX - 2, dY + 2]);
+                        dX -= 2;
+                        dY += 2;
+                    }
+                }
+            }
+            return aniHover;
         }
 
         initialize();
