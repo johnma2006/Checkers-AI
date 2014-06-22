@@ -209,15 +209,21 @@
         }
         function drawPieces() {
 
+            //Draw squares
+            ctx.fillStyle = "#E8D0A9";
+            for (var i = 0; i < 8; i++)
+                for (var j = (i + 1) % 2; j < 8; j += 2)
+                    ctx.fillRect(i * height + lineWidth, j * height + lineWidth, height, height);
+
             for (var i = 0; i < 8; i++) {
                 for (var j = i % 2; j < 8; j += 2) {
                     //Draw squares
+
                     ctx.fillStyle = "#B7AFA3";
                     if (i == selected[0] && j == selected[1]) {
                         ctx.fillStyle = '#A8A094';
                     }
                     ctx.fillRect(i * height + lineWidth, j * height + lineWidth, height, height);
-
 
                     if (i == selected[0] && j == selected[1]) {
                         ctx.lineWidth = "1";
@@ -296,7 +302,25 @@
                         ctx.lineWidth = 3;
                         ctx.strokeStyle = '#A89A8F';
                         ctx.stroke();
+                    }/*
+                    ctx.strokeStyle = "#ACD1E9";
+                    ctx.lineWidth = 2;
+                    if (a == 0) {
+                        var i2 = selected[0];
+                        var j2 = selected[1];
+                        ctx.beginPath();
+                        ctx.moveTo(i * height + 0.5 * height + lineWidth, j * height + 0.5 * height + lineWidth);
+                        ctx.lineTo(i2 * height + 0.5 * height + lineWidth, j2 * height + 0.5 * height + lineWidth);
+                        ctx.stroke();
                     }
+                    else if (a < animationHover.length - 1) {
+                        var i2 = animationHover[a + 1][0];
+                        var j2 = animationHover[a + 1][1];
+                        ctx.beginPath();
+                        ctx.moveTo(i * height + 0.5 * height + lineWidth, j * height + 0.5 * height + lineWidth);
+                        ctx.lineTo(i2 * height + 0.5 * height + lineWidth, j2 * height + 0.5 * height + lineWidth);
+                        ctx.stroke();
+                    }*/
                 }
             }
             
@@ -941,11 +965,11 @@
                     if (testBoard[i][j] == "0")
                         s0 += 1.0;
                     if (testBoard[i][j] == "00")
-                        s0 += 2.2;
+                        s0 += 3.0;
                     if (testBoard[i][j] == "1")
                         s1 += 1.0;
                     if (testBoard[i][j] == "11")
-                        s1 += 2.2;
+                        s1 += 3.0;
 
                 }
             //Pieces on home row are weighted more
