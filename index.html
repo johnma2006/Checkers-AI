@@ -77,6 +77,27 @@
             for (var i = 5; i < 8; i++)
                 for (var j = i % 2; j < 8; j += 2)
                     board[j][i] = "0";
+            /*
+            board[2][4] = "0";
+            board[0][2] = "1";
+            board[0][6] = "1";
+
+            board[2][6] = "11";
+
+            board[3][1] = "0";
+            board[3][7] = "11";
+
+            board[4][0] = "00";
+            board[4][2] = "0";
+
+            board[6][2] = "1";
+            board[6][6] = "00";
+
+            board[7][5] = "0";
+            board[7][7] = "0";
+
+            turn = "1";*/
+
         }
 
         //Drawing functions
@@ -997,9 +1018,9 @@
                         s0 += (7.0 - j) / 10.0;
                 }
 
+            //Kings want to move toward enemy pieces
             var kingLocations0 = Array();
             var kingLocations1 = Array();
-            //Kings want to stay grouped
             for (var i = 0; i < 8; i++)
                 for (var j = i % 2; j < 8; j += 2) {
                     if (testBoard[i][j] == "00")
@@ -1007,22 +1028,11 @@
                     else if (testBoard[i][j] == "11")
                         kingLocations1.push([i, j]);
                 }
-
             for (var a in kingLocations0)
-                for (var b in kingLocations0)
-                    s0 -= 1.0 / 100.0 * Math.abs(kingLocations0[a][0] - kingLocations0[b][0]) + Math.abs(kingLocations0[a][1] - kingLocations0[b][1]);
+                s0 += kingLocations0[a][1] / 100.0;
 
             for (var a in kingLocations1)
-                for (var b in kingLocations1)
-                    s1 -= 1.0 / 100.0 * Math.abs(kingLocations1[a][0] - kingLocations1[b][0]) + Math.abs(kingLocations1[a][1] - kingLocations1[b][1]);
-
-
-            //Kings want to move toward enemy pieces
-            for (var a in kingLocations0)
-                s0 += kingLocations0[a][1] / 1000.0;
-
-            for (var a in kingLocations1)
-                s1 += (7.0 - kingLocations1[a][1]) / 1000.0;
+                s1 += (7.0 - kingLocations1[a][1]) / 100.0;
 
             if (s0 < 0.5)
                 return 9001.0;
