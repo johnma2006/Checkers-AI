@@ -47,8 +47,8 @@
         var debug = "selected: " + selected;
         var debug2 = "score: 0";
         var debug3 = "";
-        var debug4 = "";
-        var debug5 = "";
+        var debug4 = "bestMove:";
+        var debug5 = "(totalMoves, bestMoves, maxScore):";
 
         function initialize() {
 
@@ -158,14 +158,14 @@
 
             ctx.fillStyle = '#000000';
             ctx.font = "14px Calibri";
-            ctx.fillText(debug, 700, 350);
-            ctx.fillText(debug2, 700, 370);
-            ctx.fillText(debug3, 700, 390);
-            ctx.fillText(debug4, 700, 410);
-            ctx.fillText(debug5, 700, 430);
+            ctx.fillText(debug, 700, 550);
+            ctx.fillText(debug2, 700, 570);
+            ctx.fillText(debug3, 700, 590);
+            ctx.fillText(debug4, 700, 610);
+            ctx.fillText(debug5, 700, 630);
 
             if (turn == "1") {
-                if (moveTimer < 5)
+                if (moveTimer < 5)  
                     moveTimer++;
                 if (moveTimer >= 5) {
                     var bestMove = getBestMove(board, numMovesLookAhead)[0];
