@@ -37,6 +37,7 @@
         var turn = 0;
         var numMovesLookAhead = 4;
         var moveTimer = 0;
+        var activeAI = 0;
 
         var king = new Image();
 
@@ -153,6 +154,10 @@
                 ctx.stroke();
             }
 
+            ctx.fillStyle = '#000000';
+            ctx.font = "bold 20px Calibri";
+            ctx.fillText("G/H to start/stop CPU v. CPU", 690, 200);
+
             debug2 = "score: " + score(board);
             debug3 = "hovor: " + hovor;
 
@@ -171,15 +176,26 @@
                     var bestMove = getBestMove(board, numMovesLookAhead)[0];
                     debug4 = "bestMove: (" + bestMove[0] + ", " + bestMove[1] + "), directions: " + bestMove[2];
                     board = generateMove(board, bestMove[0], bestMove[1], bestMove[2]);
-                    for (var i = 1; i < 4; i += 2)
-                        if (board[i][7] == "1")
-                            board[i][7] = "11";
                     turn = "0";
                     moveTimer = 0;
                 }
                 for (var i = 1; i < 8; i += 2)
                     if (board[i][7] == "1")
                         board[i][7] = "11";
+            }
+            else if (turn == "0" && activeAI == 1) {
+                if (moveTimer < 5)
+                    moveTimer++;
+                if (moveTimer >= 5) {
+                    var bestMove = getBestMove2(board, numMovesLookAhead)[0];
+                    debug4 = "bestMove: (" + bestMove[0] + ", " + bestMove[1] + "), directions: " + bestMove[2];
+                    board = generateMove(board, bestMove[0], bestMove[1], bestMove[2]);
+                    turn = "1";
+                    moveTimer = 0;
+                }
+                for (var i = 0; i < 8; i += 2)
+                    if (board[i][0] == "0")
+                        board[i][0] = "00";
             }
         }
         function drawPieces() {
@@ -478,18 +494,12 @@
                     board = realBoard;
                     debug = "realBoard";
                     break;
-                case 51: //3
-                    if (turn == "1") {
-                        var bestMove = getBestMove(board, 4)[0];
-                        debug4 = "(x, y): (" + bestMove[0] + ", " + bestMove[1] + "), directions: " + bestMove[2];
-                        board = generateMove(board, bestMove[0], bestMove[1], bestMove[2]);
-                        for (var i = 1; i < 4; i += 2)
-                            if (board[i][7] == "1")
-                                board[i][7] = "11";
-                        turn = "0";
-                    }
+                case 71: //G
+                    activeAI = 1;
                     break;
-
+                case 72: //H
+                    activeAI = 0;
+                    break;
             }
         }
 
@@ -777,6 +787,50 @@
                 return [bestMove[index], maxScore];
             }
         } //returns [x, y, direction]
+        function getBestMove2(testBoard, iterations) { //Returns [[x, y, directions], score]
+            if (iterations == 1) {
+                return [[], 1.0 / score(testBoard)];
+            }
+            else {
+                var arrayOfNewTestBoardScores = Array();
+
+                var allPossibleMoves1 = getAllPossibleMoves(testBoard, "0");
+
+                var maxScore = 0;
+                var bestMove = Array();
+                var allScores = Array();
+
+                var test = "";
+                for (var i in allPossibleMoves1) {
+                    var newBoard = generateMove(testBoard, allPossibleMoves1[i][1][0], allPossibleMoves1[i][1][1], allPossibleMoves1[i][2]);
+
+                    var allPossibleMoves2 = getAllPossibleMoves(newBoard, "1");
+
+                    var minScore = 9999999;
+                    var worstMove;
+                    for (var j in allPossibleMoves2) {
+                        var newBoard2 = generateMove(newBoard, allPossibleMoves2[j][1][0], allPossibleMoves2[j][1][1], allPossibleMoves2[j][2]);
+                        var subWorstMove = getBestMove2(newBoard2, iterations - 1);
+
+                        if (subWorstMove[1] < minScore) {
+                            minScore = subWorstMove[1];
+                            worstmove = subWorstMove[0];
+                        }
+                    }
+                    allScores.push(minScore);
+                    if (minScore > maxScore) {
+                        maxScore = minScore;
+                        bestMove = [[allPossibleMoves1[i][1][0], allPossibleMoves1[i][1][1], allPossibleMoves1[i][2]]];
+                    }
+                    else if (minScore == maxScore) {
+                        bestMove.push([allPossibleMoves1[i][1][0], allPossibleMoves1[i][1][1], allPossibleMoves1[i][2]]);
+                    }
+                }
+                var index = Math.floor(Math.random() * bestMove.length);
+                debug5 = "(totalMoves, bestMoves, maxScore): (" + allScores.length + ", " + bestMove.length + ", " + maxScore + ")";
+                return [bestMove[index], maxScore];
+            }
+        } //returns [x, y, direction]
         function returnIfHasKill2(testBoard, x, y) {
             if (x == -1)
                 return false;
@@ -850,9 +904,9 @@
             //Pieces on home row are weighted more
             for (var i = 0; i < 8; i++) {
                 if (testBoard[i][0] == "1")
-                    n1 += 1.0;
+                    n1 += 0.5;
                 if (testBoard[i][7] == "0")
-                    n0 += 1.0;
+                    n0 += 0.5;
             }
 
             if (n0 < 0.5)
@@ -865,12 +919,6 @@
         window.addEventListener('keydown', doKeyDown, true);
         window.addEventListener('click', addClickElementToBoard, true);
         window.addEventListener('mousemove', trackMouse, true);
-        
-        //CAN IT PEE?
-        //CAN IT REACH THE POOPY SKY?
-        //CAN IT REACH A LION?
-        //CAN IT PUSH A CHAIR?
-        //CAN IT REACH THE EARTH
 
     </script>
 
