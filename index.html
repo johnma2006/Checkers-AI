@@ -843,25 +843,18 @@
                         bestMove.push([allPossibleMoves1[i][1][0], allPossibleMoves1[i][1][1], allPossibleMoves1[i][2]]);
                     }
                 }
-                var bestMove2 = Array();
-                var maxScore = 0;
-                for (var a in bestMove) {
-                    var currScore = score(generateMove(testBoard, bestMove[a][0][0], bestMove[a][0][1], bestMove[a][0][2]));
-                    if (currScore > maxScore) {
-                        maxScore = currScore;
-                        bestMove2 = [[bestMove[a][0][0], bestMove[a][0][1], bestMove[a][0][2]]];
-                    }
-                    else if (currScore == maxScore) {
-                        bestMove2.push([bestMove[a][0][0], bestMove[a][0][1], bestMove[a][0][2]]);
-                    }
-
-                }
-
                 if (iterations == numMovesLookAhead) {
                     var bestMove2 = Array();
                     var maxScore = 0;
                     for (var a in bestMove) {
-                        var currScore = score(generateMove(testBoard, bestMove[a][0], bestMove[a][1], [bestMove[a][2][0]]));
+                        var scores = Array();
+                        var newBoard2 = generateMove(testBoard, bestMove[a][0], bestMove[a][1], [bestMove[a][2][0]]);
+                        var possibleMoves3 = getAllPossibleMoves(newBoard2, "0");
+                        for (var b in possibleMoves3)
+                            scores.push(score(possibleMoves3[b][0]));
+                        
+                        var currScore = Math.min.apply(Math, scores);;
+
                         if (currScore > maxScore) {
                             maxScore = currScore;
                             bestMove2 = [bestMove[a].slice()];
@@ -869,7 +862,6 @@
                         else if (currScore == maxScore) {
                             bestMove2.push(bestMove[a].slice());
                         }
-
                     }
 
                     var index = Math.floor(Math.random() * bestMove2.length);
@@ -926,7 +918,14 @@
                     var bestMove2 = Array();
                     var maxScore = 0;
                     for (var a in bestMove) {
-                        var currScore = 1.0 / score(generateMove(testBoard, bestMove[a][0], bestMove[a][1], [bestMove[a][2][0]]));
+                        var scores = Array();
+                        var newBoard2 = generateMove(testBoard, bestMove[a][0], bestMove[a][1], [bestMove[a][2][0]]);
+                        var possibleMoves3 = getAllPossibleMoves(newBoard2, "1");
+                        for (var b in possibleMoves3)
+                            scores.push(1.0 / score(possibleMoves3[b][0]));
+
+                        var currScore = Math.min.apply(Math, scores);;
+
                         if (currScore > maxScore) {
                             maxScore = currScore;
                             bestMove2 = [bestMove[a].slice()];
@@ -934,7 +933,6 @@
                         else if (currScore == maxScore) {
                             bestMove2.push(bestMove[a].slice());
                         }
-
                     }
 
                     var index = Math.floor(Math.random() * bestMove2.length);
@@ -1015,17 +1013,17 @@
                 }
 
 
-            //Normal pieces = 1.0, Kings = 3.0
+            //Normal pieces = 1.0, Kings = 1.5
             for (var i = 0; i < 8; i++)
                 for (var j = i % 2; j < 8; j += 2) {
                     if (testBoard[i][j] == "0")
                         s0 += 1.0;
                     if (testBoard[i][j] == "00" || (j == 0 && testBoard[i][j] == "0"))
-                        s0 += 3.0;
+                        s0 += 1.5;
                     if (testBoard[i][j] == "1")
                         s1 += 1.0;
                     if (testBoard[i][j] == "11" || (j == 7 && testBoard[i][j] == "1"))
-                        s1 += 3.0;
+                        s1 += 1.5;
 
                 }
             //Pieces on home row are weighted more
