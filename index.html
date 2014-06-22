@@ -144,7 +144,7 @@
             ctx.fillText(debug2, 700, 570);
             ctx.fillText(debug3, 700, 590);
             ctx.fillText(debug4, 700, 610);
-            ctx.fillText(animationHover, 700, 630);
+            ctx.fillText(debug5, 700, 630);
 
             if (turn == "1" && animationTimer == 0) {
                 if (moveTimer < 5)  
@@ -994,7 +994,7 @@
                     if (board[i][j] == "1" && n1 <= 5)
                         s1 += j / 10.0;
                     if (board[i][j] == "0" && n0 <= 5)
-                        s1 += (7.0 - j) / 10.0;
+                        s0 += (7.0 - j) / 10.0;
                 }
 
             if (s0 < 0.5)
