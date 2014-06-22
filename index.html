@@ -318,6 +318,9 @@
                         //alert(getBestMove(board, 3));
                     }
                 }
+                else if (haveToEat && !returnIfHasKill(x, y)) {
+                    alert("If it is possible to eat a piece, you have to eat it.");
+                }
                 else {
                     selected = [-1, -1];
                 }
