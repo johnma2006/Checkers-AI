@@ -87,6 +87,15 @@
             board[7][1] = "00";
             board[0][6] = "0";
             board[1][7] = "0";
+            
+            //Old king bug
+            board[4][0] = "00";
+            board[4][2] = "00";
+            board[7][1] = "0";
+
+            board[3][3] = "11";
+            board[2][4] = "11";
+            board[2][6] = "11";
             */
 
         }
@@ -823,7 +832,6 @@
                 var arrayOfNewTestBoardScores = Array();
 
                 var allPossibleMoves1 = getAllPossibleMoves(testBoard, "1");
-
                 var maxScore = 0;
                 var bestMove = Array();
                 var allScores = Array();
@@ -1005,7 +1013,7 @@
         function testIfHaveToKill(testBoard, turn) {
             for (var i = 0; i < 8; i++)
                 for (var j = 0; j < 8; j++)
-                    if (testBoard[i][j] == turn && returnIfHasKill2(testBoard, i, j))
+                    if (testBoard[i][j][0] == turn && returnIfHasKill2(testBoard, i, j))
                         return true;
             return false;
         } 
