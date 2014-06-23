@@ -230,6 +230,10 @@
         }
         function drawPieces() {
 
+            //Draw background
+            ctx.fillStyle = "#A09A90";
+            ctx.fillRect(0, 0, height * 8 + lineWidth * 2, height * 8 + lineWidth * 2);
+
             //Draw squares
             ctx.fillStyle = "#E8D0A9";
             for (var i = 0; i < 8; i++)
