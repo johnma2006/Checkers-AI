@@ -32,13 +32,15 @@
         var permSelected = false;
         var possibleMoves = Array();
         var hovor = [-1, -1];
+        var mouseHovor = [-1, -1];
         var haveToEat = false;
 
         var turn = 0;
-        var numMovesLookAhead = 4;
+        var numMovesLookAhead = 4; //Default 4, fast 3
         var moveTimer = 0;
         var activeAI = 0;
         var animationTimer = 0;
+        var animationLength = 50; //Default 50, fast 10
         var nextBoard = Array();
         var animationHover = Array();
 
@@ -124,6 +126,9 @@
                     if (board[i][j] == turn && returnIfHasKill(i, j))
                         haveToEat = true;
         
+            if (turn == "1")
+                mouseHovor = [-1, -1];
+
             drawPieces();
             ctx.fillStyle = '#000000';
             ctx.font = "bold 32px Calibri";
@@ -213,7 +218,7 @@
             else if (animationTimer > 0) {
                 animationTimer++;
 
-                if (animationTimer > 50) {
+                if (animationTimer > animationLength) {
                     board = Array();
                     for (var i in nextBoard)
                         board.push(nextBoard[i].slice());
@@ -348,6 +353,13 @@
                     }*/
                 }
             }
+            //Mouse outline
+            if (mouseHovor[0] != -1 && (selected[0] == -1) && activeAI == 0) {
+                ctx.lineWidth = "1";
+                ctx.strokeStyle = "#69655E";
+                ctx.rect(mouseHovor[0] * height + lineWidth, mouseHovor[1] * height + lineWidth, height, height);
+                ctx.stroke();
+            }
             
 
         }
@@ -394,12 +406,8 @@
                 }
             }
             else if (!permSelected) { //Select element
-                if (x >= 0 && x < 8 && y >= 0 && y < 8 && (x + y) % 2 == 0 && board[x][y][0] == turn && board[x][y] != "" && (!haveToEat || returnIfHasKill(x, y)) && animationTimer == 0) {
+                if (x >= 0 && x < 8 && y >= 0 && y < 8 && (x + y) % 2 == 0 && board[x][y][0] == turn && board[x][y] != "" && (!haveToEat || returnIfHasKill(x, y)) && animationTimer == 0)
                     selected = [x, y];
-                    if (x == 1 && y == 5) {
-                        //alert(getBestMove(board, 3));
-                    }
-                }
                 else if (haveToEat && !returnIfHasKill(x, y) && animationHover == 0) {
                     alert("If it is possible to eat a piece, you have to eat it.");
                 }
@@ -431,6 +439,11 @@
                 hovor = [x, y];
             else
                 hovor = [-1, -1];
+
+            if (x >= 0 && x < 8 && y >= 0 && y < 8)
+                mouseHovor = [x, y];
+            else
+                mouseHovor = [-1, -1];
         }
         function getPossibleMoves(x, y) {
             var possibleMoves = Array();
@@ -570,15 +583,6 @@
 
         function doKeyDown(evt) {
             switch (evt.keyCode) {
-                case 49: //1
-                    realBoard = board;
-                    board = tempBoard;
-                    debug = "tempBoard";
-                    break;
-                case 50: //2
-                    board = realBoard;
-                    debug = "realBoard";
-                    break;
                 case 71: //G
                     activeAI = 1;
                     break;
@@ -1071,8 +1075,8 @@
                     if (testBoard[i][j] == "1" && n1 <= 7)
                         s1 += 1.0 / 10.0 * j;
 
-            /*
-            //Kings want to move toward enemy pieces
+            //If winning, want to get kings closer to the enemy pieces
+
             var kingLocations0 = Array();
             var kingLocations1 = Array();
             for (var i = 0; i < 8; i++)
@@ -1082,12 +1086,9 @@
                     else if (testBoard[i][j] == "11")
                         kingLocations1.push([i, j]);
                 }
-            for (var a in kingLocations0)
-                s0 -= Math.abs(4.0 - kingLocations0[a][1]) / 100.0;
 
-            for (var a in kingLocations1)
-                s1 -= Math.abs(3.0 - kingLocations1[a][1]) / 100.0;
-            */
+
+            
             if (n0 == 0)
                 return 9001.0;
             if (n1 == 0)
