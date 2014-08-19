@@ -4,7 +4,6 @@
 <head>
     <meta charset="utf-8" />
     <title>Checkers AI</title>
-    <link rel="stylesheet" type="text/css" href="style.css">
     <style type="text/css">
         body {
             background-color: #EDEDED;
@@ -15,10 +14,11 @@
 </head>
 <body>
     
-    <canvas id="canvas1" width="1000" height="700" style="border:0px solid #c3c3c3; margin-left:27%;margin-top:20px;border:0px solid black"></canvas>
+    <canvas id="canvas1" width="1000" height="700" style="border:0px solid #c3c3c3; margin-left:25%;margin-top:20px;border:0px solid black"></canvas>
     
     <script>
-
+        //Todo: endgame
+        //Todo: 2 move lookahead
         var c;
         var ctx;
 
@@ -40,9 +40,10 @@
         var moveTimer = 0;
         var activeAI = 0;
         var animationTimer = 0;
-        var animationLength = 50; //Default 50, fast 10
+        var animationLength = 10; //Default 50, fast 10
         var nextBoard = Array();
         var animationHover = Array();
+        var reset = false;
 
         var king = new Image();
 
@@ -65,7 +66,6 @@
             drawBoard();
 
             return setInterval(draw, 10);
-
         }
         function initializeBoard() {
             for (var i = 0; i < 8; i++) {
@@ -132,7 +132,7 @@
             drawPieces();
             ctx.fillStyle = '#000000';
             ctx.font = "bold 32px Calibri";
-            ctx.fillText("Checkers", 690, 50);
+            ctx.fillText("Checkers AI", 690, 50);
             ctx.font = "19px Calibri";
             ctx.fillText("by John Ma", 690, 78);
 
@@ -160,10 +160,11 @@
             ctx.fillStyle = '#000000';
             ctx.font = "bold 20px Calibri";
             ctx.fillText("G/H to start/stop CPU v. CPU", 690, 200);
+            ctx.fillText("R to restart game", 690, 230);
 
             debug2 = "score: " + score(board);
             debug3 = "hovor: " + hovor;
-
+            /*
             ctx.fillStyle = '#000000';
             ctx.font = "14px Calibri";
             ctx.fillText(debug, 700, 550);
@@ -171,7 +172,7 @@
             ctx.fillText(debug3, 700, 590);
             ctx.fillText(debug4, 700, 610);
             ctx.fillText(debug5, 700, 630);
-
+            */
             if (turn == "1" && animationTimer == 0) {
                 if (moveTimer < 5)  
                     moveTimer++;
@@ -215,7 +216,7 @@
                             nextBoard[i][0] = "00";
                 }
             }
-            else if (animationTimer > 0) {
+            else if (animationTimer > 0 && !reset) {
                 animationTimer++;
 
                 if (animationTimer > animationLength) {
@@ -232,6 +233,8 @@
                     selected = [-1, -1];
                 }
             }
+            if (reset)
+                reset = false;
         }
         function drawPieces() {
 
@@ -589,6 +592,18 @@
                 case 72: //H
                     activeAI = 0;
                     break;
+                case 82: //R
+                    activeAI = 0;
+                    turn = 0;
+                    selected = [-1, -1];
+                    hovor = [-1, -1];
+                    mouseHovor = [-1, -1];
+                    permSelected = false;
+                    haveToEat = false;
+                    animationTimer = 0;
+                    reset = true;
+                    initializeBoard();
+                    break;
             }
         }
 
@@ -860,6 +875,8 @@
                             minScore = subWorstMove[1];
                             worstmove = subWorstMove[0];
                         }
+                        if (minScore < maxScore)
+                            break;
                     }
                     allScores.push(minScore);
                     if (minScore > maxScore) {
